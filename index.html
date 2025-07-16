@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Malla Ingeniería Civil Industrial</title>
+  <style>
+    body {
+      font-family: 'Times New Roman', serif;
+      background: linear-gradient(to bottom right, #fbeaec, #e0d4d6);
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #822e46;
+      color: white;
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header h1 {
+      font-family: 'Georgia', serif;
+      font-size: 24px;
+      margin: 0;
+    }
+    header img {
+      height: 50px;
+    }
+    .container {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 15px;
+      padding: 20px;
+    }
+    .year-column {
+      background: #f5f0f1;
+      border-radius: 12px;
+      padding: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .year-title {
+      font-weight: bold;
+      color: #822e46;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    .subject {
+      background-color: #fff2f4;
+      border: 2px solid #c28795;
+      border-radius: 8px;
+      padding: 8px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      position: relative;
+      font-size: 14px;
+    }
+    .subject.locked {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+    .subject.locked::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      background: #822e46;
+      color: white;
+      font-size: 12px;
+      padding: 4px 6px;
+      border-radius: 4px;
+      top: 100%;
+      left: 0;
+      white-space: nowrap;
+      transform: translateY(4px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .subject.locked:hover::after {
+      opacity: 1;
+    }
+    .subject.approved {
+      background-color: #d6f5e8;
+      border-color: #70c1a5;
+      text-decoration: line-through;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Malla Ingeniería Civil Industrial</h1>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Logo_UAUTONOMA_horizontal.svg/2560px-Logo_UAUTONOMA_horizontal.svg.png" alt="UA Logo">
+  </header>
+  <div class="container" id="malla"></div>
+
+  <script>
+    const mallaData = [
+      {
+        year: "1° Año",
+        semestres: [
+          {
+            nombre: "Primer semestre",
+            ramos: [
+              { nombre: "Introducción a las matemáticas", abre: ["Álgebra", "Cálculo I"] },
+              { nombre: "Fundamentos de gestión", abre: ["Teoría organizacional"] },
+              { nombre: "Tecnologías para la gestión", abre: ["Programación"] },
+              { nombre: "Introducción a la ingeniería" },
+              { nombre: "Electivo de desarrollo del pensamiento" }
+            ]
+          },
+          {
+            nombre: "Segundo semestre",
+            ramos: [
+              { nombre: "Álgebra", prereq: ["Introducción a las matemáticas"], abre: ["Álgebra lineal", "Probabilidad y estadística"] },
+              { nombre: "Química y medio ambiente" },
+              { nombre: "Cálculo I", prereq: ["Introducción a las matemáticas"], abre: ["Cálculo II"] },
+              { nombre: "Programación", prereq: ["Tecnologías para la gestión"], abre: ["Programación avanzada"] },
+              { nombre: "Electivo de comunicación" }
+            ]
+          }
+        ]
+      },
+      {
+        year: "2° Año",
+        semestres: [
+          {
+            nombre: "Primer semestre",
+            ramos: [
+              { nombre: "Álgebra lineal", prereq: ["Álgebra"], abre: ["Optimización"] },
+              { nombre: "Probabilidad y estadística", prereq: ["Álgebra"], abre: ["Inferencia estadística", "Taller de aplicación industrial"] },
+              { nombre: "Física mecánica", abre: ["Ciencias y resistencia de materiales", "Mecánica de fluidos"] },
+              { nombre: "Cálculo II", prereq: ["Cálculo I"], abre: ["Cálculo III"] },
+              { nombre: "Programación avanzada", prereq: ["Programación"], abre: ["E commerce and E business"] },
+              { nombre: "Electivo de comunicación" }
+            ]
+          },
+          {
+            nombre: "Segundo semestre",
+            ramos: [
+              { nombre: "Taller de aplicación industrial", prereq: ["Probabilidad y estadística"] },
+              { nombre: "Ciencias y resistencia de materiales", prereq: ["Física mecánica"] },
+              { nombre: "Cálculo III", prereq: ["Cálculo II"], abre: ["Ecuaciones diferenciales"] },
+              { nombre: "Teoría organizacional", prereq: ["Fundamentos de gestión"], abre: ["Especialidad I"] },
+              { nombre: "Inglés técnico I", abre: ["Inglés técnico II"] }
+            ]
+          }
+        ]
+      },
+      {
+        year: "3° Año",
+        semestres: [
+          {
+            nombre: "Primer semestre",
+            ramos: [
+              { nombre: "Optimización", prereq: ["Álgebra lineal"], abre: ["Investigación operativa"] },
+              { nombre: "Inferencia estadística", prereq: ["Probabilidad y estadística"] },
+              { nombre: "Contabilidad y costos", abre: ["Microeconomía", "Ingeniería económica"] },
+              { nombre: "Mecánica de fluidos", prereq: ["Física mecánica"] },
+              { nombre: "Ecuaciones diferenciales", prereq: ["Cálculo III"], abre: ["Termodinámica", "Electricidad y electromagnetismo"] },
+              { nombre: "Inglés técnico II", prereq: ["Inglés técnico I"], abre: ["Inglés técnico III"] }
+            ]
+          },
+          {
+            nombre: "Segundo semestre",
+            ramos: [
+              { nombre: "Investigación operativa", prereq: ["Optimización"], abre: ["Gestión de operaciones I"] },
+              { nombre: "Microeconomía", prereq: ["Contabilidad y costos"], abre: ["Macroeconomía"] },
+              { nombre: "Termodinámica", prereq: ["Ecuaciones diferenciales"] },
+              { nombre: "Electricidad y electromagnetismo", prereq: ["Ecuaciones diferenciales"], abre: ["Electrónica y electrotecnia"] },
+              { nombre: "Electivo desarrollo personal" }
+            ]
+          }
+        ]
+      },
+      {
+        year: "4° Año",
+        semestres: [
+          {
+            nombre: "Primer semestre",
+            ramos: [
+              { nombre: "Gestión de operaciones I", prereq: ["Investigación operativa"], abre: ["Gestión de operaciones II", "Consultoría de empresas A+S"] },
+              { nombre: "Macroeconomía", prereq: ["Microeconomía"], abre: ["Gestión estratégica"] },
+              { nombre: "Ingeniería económica", prereq: ["Contabilidad y costos"], abre: ["Finanzas", "Formulación y evaluación de proyectos", "Economía y desarrollo regional"] },
+              { nombre: "Electrónica y electrotecnia", prereq: ["Electricidad y electromagnetismo"] },
+              { nombre: "Especialidad I", prereq: ["Teoría organizacional"], abre: ["Especialidad II"] },
+              { nombre: "Inglés técnico III", prereq: ["Inglés técnico II"], abre: ["Inglés técnico IV"] }
+            ]
+          },
+          {
+            nombre: "Segundo semestre",
+            ramos: [
+              { nombre: "Gestión de operaciones II", prereq: ["Gestión de operaciones I"], abre: ["Procesos industriales"] },
+              { nombre: "Consultoría de empresas A+S", prereq: ["Gestión de operaciones I"] },
+              { nombre: "Gestión estratégica", prereq: ["Macroeconomía"] },
+              { nombre: "Finanzas", prereq: ["Ingeniería económica"] },
+              { nombre: "E commerce and E business", prereq: ["Programación avanzada"] },
+              { nombre: "Inglés técnico IV", prereq: ["Inglés técnico III"] },
+              { nombre: "Práctica I" }
+            ]
+          }
+        ]
+      },
+      {
+        year: "5° Año",
+        semestres: [
+          {
+            nombre: "Primer semestre",
+            ramos: [
+              { nombre: "Procesos industriales", prereq: ["Gestión de operaciones II"], abre: ["Simulación de procesos"] },
+              { nombre: "Innovación y emprendimiento", prereq: ["Gestión estratégica"], abre: ["Marketing"] },
+              { nombre: "Formulación y evaluación de proyectos", prereq: ["Ingeniería económica"], abre: ["Administración y dirección de proyectos", "Plan de negocios"] },
+              { nombre: "Economía y desarrollo regional", prereq: ["Ingeniería económica"] },
+              { nombre: "Especialidad II", prereq: ["Especialidad I"], abre: ["Especialidad III"] },
+              { nombre: "Electivo de ética" }
+            ]
+          },
+          {
+            nombre: "Segundo semestre",
+            ramos: [
+              { nombre: "Simulación de procesos", prereq: ["Procesos industriales"] },
+              { nombre: "Marketing", prereq: ["Innovación y emprendimiento"] },
+              { nombre: "Administración y dirección de proyectos", prereq: ["Formulación y evaluación de proyectos"] },
+              { nombre: "Plan de negocios", prereq: ["Formulación y evaluación de proyectos"] },
+              { nombre: "Derecho de empresa y ambiental A+S" },
+              { nombre: "Electivo de responsabilidad social" },
+              { nombre: "Práctica II" }
+            ]
+          }
+        ]
+      },
+      {
+        year: "6° Año",
+        semestres: [
+          {
+            nombre: "Primer semestre",
+            ramos: [
+              { nombre: "Especialidad III", prereq: ["Especialidad II"] },
+              { nombre: "Trabajo de título" }
+            ]
+          }
+        ]
+      }
+    ];
+
+    const estado = JSON.parse(localStorage.getItem("estadoMalla") || '{}');
+
+    const container = document.getElementById("malla");
+
+    mallaData.forEach((año, index) => {
+      const columna = document.createElement("div");
+      columna.className = "year-column";
+
+      const titulo = document.createElement("div");
+      titulo.className = "year-title";
+      titulo.textContent = año.year;
+      columna.appendChild(titulo);
+
+      año.semestres.forEach(sem => {
+        const semTitulo = document.createElement("div");
+        semTitulo.innerHTML = `<strong>${sem.nombre}</strong>`;
+        columna.appendChild(semTitulo);
+
+        sem.ramos.forEach(ramo => {
+          const div = document.createElement("div");
+          div.className = "subject";
+          div.textContent = ramo.nombre;
+
+          if (estado[ramo.nombre]) {
+            div.classList.add("approved");
+          } else if (ramo.prereq && !ramo.prereq.every(r => estado[r])) {
+            div.classList.add("locked");
+            div.setAttribute("data-tooltip", `Requiere: ${ramo.prereq.join(", ")}`);
+          }
+
+          div.addEventListener("click", () => {
+            const aprobado = div.classList.toggle("approved");
+            estado[ramo.nombre] = aprobado;
+            localStorage.setItem("estadoMalla", JSON.stringify(estado));
+            location.reload();
+          });
+
+          columna.appendChild(div);
+        });
+      });
+
+      container.appendChild(columna);
+    });
+  </script>
+</body>
+</html>
